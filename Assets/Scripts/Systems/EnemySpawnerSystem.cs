@@ -1,10 +1,9 @@
 using Components;
-using System.Drawing;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Entities.UniversalDelegates;
 using Unity.Mathematics;
+using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -12,39 +11,49 @@ namespace Systems
 {
     public partial struct EnemySpawnerSystem : ISystem
     {
-        private int count;
-        private int max;
-        private bool a;
+        readonly RefRO<EnPositionAsset> asset;
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
-            foreach (var (spawner, tf) in SystemAPI.Query<RefRW<EnemySpawnerComponent>, RefRW<LocalTransform>>())
+            EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.TempJob);
+            state.Dependency = new SpawnJob { deltaTime = SystemAPI.Time.DeltaTime, ecb = ecb.AsParallelWriter()}.ScheduleParallel(state.Dependency);
+            state.Dependency.Complete();
+            ecb.Playback(state.EntityManager);
+            ecb.Dispose();
+        }
+        public partial struct SpawnJob : IJobEntity
+        {
+            public float deltaTime;
+            public EntityCommandBuffer.ParallelWriter ecb;
+            void Execute(RefRW<EnemySpawnerComponent> spawner, RefRW<LocalTransform> tf, RefRO<MeshComponent> m, RefRO<EnPositionAsset> pos)
             {
-                max = spawner.ValueRO.num * 2;
-                if(spawner.ValueRW.lastSpawnedTime <= 0)
+                if (spawner.ValueRW.lastSpawnedTime <= 0)
                 {
-                    spawner.ValueRW.canSpawn = false;
-                    for (int i = 0; i < spawner.ValueRO.num * 2; i += 2)
+                    for (int i = 0; i < spawner.ValueRO.num; i ++)
                     {
-                        var newEnemyE = ecb.Instantiate(spawner.ValueRO.prefab);
-                        ecb.SetComponent(newEnemyE, new LocalTransform
+                        var newEnemyE = ecb.Instantiate(i,spawner.ValueRO.prefab);
+                        ecb.SetComponent(i,newEnemyE, new LocalTransform
                         {
-                            Position = tf.ValueRO.Position + new float3(i, 0, 0),
+                            Position = pos.ValueRO.asset.Value.value[i],
                             Rotation = quaternion.identity,
                             Scale = 1,
                         });
-                        count = i;
+                        if (i % 2 == 0)
+                        {
+                            ecb.SetComponent(i,newEnemyE, new MaterialMeshInfo
+                            {
+                                   MaterialID = m.ValueRO.materialID,
+                                   MeshID = m.ValueRO.meshID,
+                            });
+                        }
                         spawner.ValueRW.lastSpawnedTime = spawner.ValueRO.spawnSpeed;
                     }
                 }
                 else
                 {
-                    spawner.ValueRW.lastSpawnedTime -= SystemAPI.Time.DeltaTime;
-                }
+                    spawner.ValueRW.lastSpawnedTime -= deltaTime;
+                }  
             }
-            ecb.Playback(state.EntityManager);
-            ecb.Dispose();
         }
     }
 }

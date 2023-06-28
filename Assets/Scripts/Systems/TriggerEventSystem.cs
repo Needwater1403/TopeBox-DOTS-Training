@@ -21,7 +21,7 @@ namespace Systems
 
             public ComponentDataHandles(ref SystemState systemState)
             {
-                isTakingDamage = systemState.GetComponentLookup<IsTakingDamage>(false); 
+                isTakingDamage = systemState.GetComponentLookup<IsTakingDamage>(false);
                 dmg = systemState.GetComponentLookup<Damage>(false);
             }
             public void Update(ref SystemState systemState)
@@ -42,7 +42,7 @@ namespace Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            
+
             data.Update(ref state);
             state.Dependency = new BulletTriggerEvents
             {
@@ -56,7 +56,7 @@ namespace Systems
             }.Schedule(SystemAPI.GetSingleton<SimulationSingleton>(), state.Dependency);
             state.Dependency.Complete();
         }
-        public  struct BulletTriggerEvents : ITriggerEventsJob
+        public struct BulletTriggerEvents : ITriggerEventsJob
         {
             public ComponentLookup<IsTakingDamage> isTakingDamage;
             public ComponentLookup<Damage> dmg;
@@ -94,7 +94,7 @@ namespace Systems
                     isTakingDamage[entB] = DamageBComponent;
                     dmg[entA] = entAInflictDMG;
                 }
-            }  
+            }
         }
     }
 }

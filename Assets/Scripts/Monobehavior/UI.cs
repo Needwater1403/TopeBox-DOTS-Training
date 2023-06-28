@@ -17,10 +17,10 @@ public class UI : MonoBehaviour
     private Entity _scoreBoard;
     private Entity _player;
     
-    private IEnumerator Start()
+    private void Start()
     {
         _entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-        yield return new WaitForSeconds(0.5f);
+        //yield return new WaitForSeconds(1f);
         _scoreBoard = _entityManager.CreateEntityQuery(typeof(ScoreComponent)).GetSingletonEntity();
         _player = _entityManager.CreateEntityQuery(typeof(PlayerDeadStatus)).GetSingletonEntity();
     }

@@ -10,10 +10,5 @@ namespace Components
 
         public float3 direction;
 
-        public Entity nearestEnemy;
-
-        public float minDistance; //if distance less than this mean collide
-        
-        //tagcollided;
     }
 }

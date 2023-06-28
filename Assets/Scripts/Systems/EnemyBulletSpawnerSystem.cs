@@ -1,4 +1,5 @@
 using Components;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -10,6 +11,7 @@ namespace Systems
     {
         public void OnUpdate(ref SystemState state)
         {
+            EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
             foreach (var (tf, spawner) in SystemAPI.Query<RefRO<LocalTransform>, RefRW<EnemyBulletSpawnerComponent>>())
             {       
                 foreach(var tf1 in SystemAPI.Query<RefRO<LocalTransform>>().WithAll<ControlledMovingComponent>())
@@ -18,14 +20,14 @@ namespace Systems
                     {
                         //Spawn Bullet
                         var newBulletE = state.EntityManager.Instantiate(spawner.ValueRO.prefab);
-                        state.EntityManager.SetComponentData(newBulletE, new LocalTransform
+                        ecb.SetComponent(newBulletE, new LocalTransform
                         {
                             Position = tf.ValueRO.Position + spawner.ValueRO.offset,
                             Scale = 1f,
                             Rotation = Quaternion.identity,
                         });
-                        
-                        state.EntityManager.SetComponentData(newBulletE, new BulletComponent
+
+                        ecb.AddComponent(newBulletE, new BulletComponent
                         {
                             speed = 10f,
                             range = 14f,
@@ -40,6 +42,8 @@ namespace Systems
                 }
                     
             }
+            ecb.Playback(state.EntityManager);
+            ecb.Dispose();
         }
         private float3 calculateDirection(RefRO<LocalTransform> tf)
         {

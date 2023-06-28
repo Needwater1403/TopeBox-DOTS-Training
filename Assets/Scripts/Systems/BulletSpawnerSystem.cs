@@ -1,4 +1,5 @@
 using Components;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -11,7 +12,7 @@ namespace Systems
         public void OnUpdate(ref SystemState state)
         {
             var isPressedSpace = Input.GetAxisRaw("Fire1"); //CHANGE FROM GetKeyDown(Keycode.Space)
-
+            EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);    
             foreach (var (tf, spawner) in SystemAPI.Query<RefRO<LocalTransform>, RefRW<BulletSpawnerComponent>>())
             {
                 if (isPressedSpace==0)
@@ -24,13 +25,13 @@ namespace Systems
                     {
                         //Spawn Bullet
                         var newBulletE = state.EntityManager.Instantiate(spawner.ValueRO.prefab);
-                        state.EntityManager.SetComponentData(newBulletE, new LocalTransform
+                        ecb.SetComponent(newBulletE, new LocalTransform
                         {
                             Position = tf.ValueRO.Position + spawner.ValueRO.offset,
                             Scale = 1f,
-                            Rotation = Quaternion.identity,
+                            Rotation = Quaternion.LookRotation(new float3(0,90,0)),
                         });
-                        state.EntityManager.SetComponentData(newBulletE, new BulletComponent
+                        ecb.SetComponent(newBulletE, new BulletComponent
                         {
                             speed = 20f,
                             range = 14f,
@@ -44,6 +45,8 @@ namespace Systems
                     }
                 }
             }
+            ecb.Playback(state.EntityManager);
+            ecb.Dispose();
         }
 
         private float3 calculateDirection(RefRO<LocalTransform> tf)

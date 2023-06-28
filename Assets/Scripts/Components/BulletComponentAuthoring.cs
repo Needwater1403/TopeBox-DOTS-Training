@@ -5,8 +5,8 @@ namespace Components
 {
     public class BulletComponentAuthoring : MonoBehaviour
     {
-        public float Speed = 3f;
-        public float range = 30f;
+        public float Speed;
+        public float range;
         public class BulletComponentBaker : Baker<BulletComponentAuthoring>
         {
             public override void Bake(BulletComponentAuthoring authoring)
