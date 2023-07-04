@@ -9,6 +9,10 @@ namespace Systems
     {
         public int point;
         public Entity spawner;
+        public void OnCreate(ref SystemState state)
+        {
+            state.RequireForUpdate<StartCommand>();
+        }
         public void OnUpdate(ref SystemState state)
         {
             EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
@@ -27,11 +31,10 @@ namespace Systems
             foreach (var (tf, e) in SystemAPI.Query<RefRO<DestroyComponent>>().WithNone<BulletComponent>().WithNone<ControlledMovingComponent>().WithEntityAccess())
             {
                 entityCommandBuffer.DestroyEntity(e);
-                point++;
-            }
-            foreach (var score in SystemAPI.Query<RefRW<ScoreComponent>>())
-            {
-                score.ValueRW.score = point;
+                foreach (var score in SystemAPI.Query<RefRW<ScoreComponent>>())
+                {
+                    score.ValueRW.score ++;
+                }
             }
             entityCommandBuffer.Playback(state.EntityManager);
             entityCommandBuffer.Dispose();

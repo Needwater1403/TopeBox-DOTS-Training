@@ -20,7 +20,6 @@ public class UI : MonoBehaviour
     private void Start()
     {
         _entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-        //yield return new WaitForSeconds(1f);
         _scoreBoard = _entityManager.CreateEntityQuery(typeof(ScoreComponent)).GetSingletonEntity();
         _player = _entityManager.CreateEntityQuery(typeof(PlayerDeadStatus)).GetSingletonEntity();
     }
@@ -33,6 +32,10 @@ public class UI : MonoBehaviour
         if(isDead) 
         {
             txt_dead.gameObject.SetActive(true);
+        }
+        else
+        {
+            txt_dead.gameObject.SetActive(false);
         }
     }
 }

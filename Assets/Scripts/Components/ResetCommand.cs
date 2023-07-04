@@ -4,7 +4,7 @@ using UnityEngine;
 using Unity.Entities;
 using CortexDeveloper.ECSMessages.Components;
 
-public struct StartCommand : IComponentData, IMessageComponent
+public struct ResetCommand : IComponentData, IMessageComponent
 {
-    public bool startGame;
+    public bool resetGame;
 }

@@ -9,8 +9,10 @@ public class MainMenu : MonoBehaviour
 {
     [SerializeField] Animator transition;
     private EntityManager _entityManager;
-    public GameObject panel;
-    public GameObject txt_score;
+    [SerializeField] private GameObject panel;
+    [SerializeField] private GameObject txt_score;
+    [SerializeField] private GameObject btn_back;
+    [SerializeField] private GameObject txt_dead;
     private void Start()
     {
         _entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
@@ -27,6 +29,7 @@ public class MainMenu : MonoBehaviour
         transition.SetTrigger("start");
         panel.gameObject.SetActive(false);
         txt_score.gameObject.SetActive(true);
+        btn_back.gameObject.SetActive(true);
         MessageBroadcaster.PrepareMessage().AliveForUnlimitedTime().PostImmediate(_entityManager, new StartCommand
         {
            startGame = true,
@@ -38,6 +41,14 @@ public class MainMenu : MonoBehaviour
     }
     public void BackToMainMenu()
     {
-        
+        panel.gameObject.SetActive(true);
+        txt_score.gameObject.SetActive(false);
+        btn_back.gameObject.SetActive(false);
+        txt_dead.gameObject.SetActive(false);
+        MessageBroadcaster.PrepareMessage().AliveForOneFrame().PostImmediate(_entityManager, new ResetCommand
+        {
+            resetGame = true,
+        });
+        MessageBroadcaster.RemoveAllMessagesWith<StartCommand>(_entityManager);
     }
 }

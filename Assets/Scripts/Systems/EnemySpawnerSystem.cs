@@ -16,7 +16,6 @@ namespace Systems
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<StartCommand>();
-            Debug.Log("conmm");
         }
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
