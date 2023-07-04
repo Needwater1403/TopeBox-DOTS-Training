@@ -19,6 +19,7 @@ namespace Components
     public class EnemySpawnerAuthoring : MonoBehaviour
     {
         public GameObject Prefab;
+        public bool canSpawn;
         public int num;
         public float SpawnSpeed;
         public List<float3> pos;
@@ -33,6 +34,7 @@ namespace Components
                         prefab = GetEntity(authoring.Prefab, TransformUsageFlags.Dynamic),
                         num = authoring.num,
                         spawnSpeed = authoring.SpawnSpeed,
+                        canSpawn = authoring.canSpawn,
                     });
 
                 BlobAssetReference<EnPosition> bar;

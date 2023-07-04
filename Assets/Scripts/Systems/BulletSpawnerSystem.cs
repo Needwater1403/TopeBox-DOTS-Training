@@ -13,7 +13,7 @@ namespace Systems
         {
             var isPressedSpace = Input.GetAxisRaw("Fire1"); //CHANGE FROM GetKeyDown(Keycode.Space)
             EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);    
-            foreach (var (tf, spawner) in SystemAPI.Query<RefRO<LocalTransform>, RefRW<BulletSpawnerComponent>>())
+            foreach (var (tf, spawner, offset) in SystemAPI.Query<RefRO<LocalTransform>, RefRW<BulletSpawnerComponent>, RefRO<BulletPositionAsset>>())
             {
                 if (isPressedSpace==0)
                 {
@@ -24,20 +24,23 @@ namespace Systems
                     if (spawner.ValueRO.lastSpawnedTime <= 0)
                     {
                         //Spawn Bullet
-                        var newBulletE = state.EntityManager.Instantiate(spawner.ValueRO.prefab);
-                        ecb.SetComponent(newBulletE, new LocalTransform
+                        for(int i = 0; i < spawner.ValueRW.num;i++)
                         {
-                            Position = tf.ValueRO.Position + spawner.ValueRO.offset,
-                            Scale = 1f,
-                            Rotation = Quaternion.LookRotation(new float3(0,90,0)),
-                        });
-                        ecb.SetComponent(newBulletE, new BulletComponent
-                        {
-                            speed = 20f,
-                            range = 14f,
-                            direction = new float3(0,1,0),
-                        });
-                        spawner.ValueRW.lastSpawnedTime = spawner.ValueRO.spawnSpeed;
+                            var newBulletE = state.EntityManager.Instantiate(spawner.ValueRO.prefab);
+                            ecb.SetComponent(newBulletE, new LocalTransform
+                            {
+                                Position = tf.ValueRO.Position + offset.ValueRO.asset.Value.value[i],
+                                Scale = 1f,                              
+                                Rotation = Quaternion.LookRotation(new float3(0, 90, 0)),
+                            });
+                            ecb.SetComponent(newBulletE, new BulletComponent
+                            {
+                                speed = 20f,
+                                range = 14f,
+                                direction = new float3(0, 1, 0),
+                            });
+                            spawner.ValueRW.lastSpawnedTime = spawner.ValueRO.spawnSpeed;
+                        }
                     }
                     else
                     {

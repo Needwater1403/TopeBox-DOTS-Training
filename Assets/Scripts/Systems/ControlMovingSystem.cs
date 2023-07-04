@@ -1,4 +1,5 @@
 using Components;
+using Unity.Burst;
 using Unity.Entities;
 using Unity.Physics;
 using Unity.Transforms;
@@ -8,6 +9,11 @@ namespace Systems
 {
     public partial struct ControlMovingSystem:ISystem
     {
+        public void OnCreate(ref SystemState state)
+        {
+            state.RequireForUpdate<StartCommand>();
+        }
+        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             var dirX = Input.GetAxisRaw("Horizontal");
@@ -25,6 +31,10 @@ namespace Systems
                 if (tf.ValueRW.Position.x > range.ValueRO.maxX)
                 {
                     tf.ValueRW.Position.x = range.ValueRO.maxX;
+                }
+                if (tf.ValueRW.Position.y < range.ValueRO.minY)
+                {
+                    tf.ValueRW.Position.y = range.ValueRO.minY;
                 }
             }
         }

@@ -10,6 +10,7 @@ namespace Components
     {
         public Entity prefab;
         public int num;
+        public bool canSpawn;
         public float spawnSpeed;
         public float lastSpawnedTime;
     }

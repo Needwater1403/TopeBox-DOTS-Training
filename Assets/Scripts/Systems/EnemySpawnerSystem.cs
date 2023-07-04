@@ -13,6 +13,12 @@ namespace Systems
     {
         readonly RefRO<EnPositionAsset> asset;
         [BurstCompile]
+        public void OnCreate(ref SystemState state)
+        {
+            state.RequireForUpdate<StartCommand>();
+            Debug.Log("conmm");
+        }
+        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.TempJob);
@@ -27,32 +33,35 @@ namespace Systems
             public EntityCommandBuffer.ParallelWriter ecb;
             void Execute(RefRW<EnemySpawnerComponent> spawner, RefRW<LocalTransform> tf, RefRO<MeshComponent> m, RefRO<EnPositionAsset> pos)
             {
-                if (spawner.ValueRW.lastSpawnedTime <= 0)
+                if(spawner.ValueRW.canSpawn)
                 {
-                    for (int i = 0; i < spawner.ValueRO.num; i ++)
+                    if (spawner.ValueRW.lastSpawnedTime <= 0)
                     {
-                        var newEnemyE = ecb.Instantiate(i,spawner.ValueRO.prefab);
-                        ecb.SetComponent(i,newEnemyE, new LocalTransform
+                        for (int i = 0; i < spawner.ValueRO.num; i++)
                         {
-                            Position = pos.ValueRO.asset.Value.value[i],
-                            Rotation = quaternion.identity,
-                            Scale = 1,
-                        });
-                        if (i % 2 == 0)
-                        {
-                            ecb.SetComponent(i,newEnemyE, new MaterialMeshInfo
+                            var newEnemyE = ecb.Instantiate(i, spawner.ValueRO.prefab);
+                            ecb.SetComponent(i, newEnemyE, new LocalTransform
                             {
-                                   MaterialID = m.ValueRO.materialID,
-                                   MeshID = m.ValueRO.meshID,
+                                Position = pos.ValueRO.asset.Value.value[i],
+                                Rotation = quaternion.identity,
+                                Scale = 1,
                             });
+                            if (i % 2 == 0)
+                            {
+                                ecb.SetComponent(i, newEnemyE, new MaterialMeshInfo
+                                {
+                                    MaterialID = m.ValueRO.materialID,
+                                    MeshID = m.ValueRO.meshID,
+                                });
+                            }
+                            spawner.ValueRW.lastSpawnedTime = spawner.ValueRO.spawnSpeed;
                         }
-                        spawner.ValueRW.lastSpawnedTime = spawner.ValueRO.spawnSpeed;
+                    }
+                    else
+                    {
+                        spawner.ValueRW.lastSpawnedTime -= deltaTime;
                     }
                 }
-                else
-                {
-                    spawner.ValueRW.lastSpawnedTime -= deltaTime;
-                }  
             }
         }
     }

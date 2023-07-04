@@ -7,7 +7,7 @@ namespace Components
     {
         public GameObject Prefab;
         public float SpawnSpeed;
-
+        public float lastSpawnTime;
         public Vector3 Offset;
 
         public class EnemyBulletSpawnerComponentBaker : Baker<EnemyBulletSpawnerAuthoring>
@@ -20,7 +20,8 @@ namespace Components
                     {
                         prefab = GetEntity(authoring.Prefab, TransformUsageFlags.Dynamic),
                         spawnSpeed = authoring.SpawnSpeed,
-                        offset = authoring.Offset
+                        offset = authoring.Offset,
+                        lastSpawnedTime = 1,
                     });
             }
         }

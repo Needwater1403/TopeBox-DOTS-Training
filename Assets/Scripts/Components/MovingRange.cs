@@ -6,5 +6,6 @@ namespace Components
     {
         public float minX;
         public float maxX;
+        public float minY;  
     }
 }
