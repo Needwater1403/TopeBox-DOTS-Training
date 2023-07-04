@@ -31,7 +31,7 @@ namespace Systems
                             {
                                 Position = tf.ValueRO.Position + offset.ValueRO.asset.Value.value[i],
                                 Scale = 1f,                              
-                                Rotation = Quaternion.LookRotation(new float3(0, 90, 0)),
+                                Rotation = Quaternion.identity,
                             });
                             ecb.SetComponent(newBulletE, new BulletComponent
                             {

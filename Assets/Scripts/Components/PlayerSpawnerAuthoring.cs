@@ -11,7 +11,7 @@ namespace Components
     public class PlayerSpawnerAuthoring : MonoBehaviour
     {
         public GameObject Prefab;
-        public bool canSpawn;
+        public bool canSpawn = true;
         public class PlayerSpawnerComponentBaker : Baker<PlayerSpawnerAuthoring>
         {
             public override void Bake(PlayerSpawnerAuthoring authoring)
