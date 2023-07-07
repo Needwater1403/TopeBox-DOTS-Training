@@ -12,6 +12,5 @@ namespace Components
         public int num;
         public int max;
         public float3 offset;
-
     }
 }

@@ -1,4 +1,5 @@
 using Components;
+using CortexDeveloper.ECSMessages.Service;
 using System.Collections;
 using System.Collections.Generic;
 using Systems;
@@ -8,7 +9,7 @@ using Unity.Scenes;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
+using CortexDeveloper.ECSMessages.Service;
 public class UI : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI txt_score;
@@ -16,6 +17,7 @@ public class UI : MonoBehaviour
     private EntityManager _entityManager;
     private Entity _scoreBoard;
     private Entity _player;
+    
     
     private void Start()
     {

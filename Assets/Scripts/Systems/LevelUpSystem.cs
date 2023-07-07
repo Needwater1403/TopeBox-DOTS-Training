@@ -1,6 +1,8 @@
 using Components;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using CortexDeveloper.ECSMessages.Service;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
@@ -9,6 +11,7 @@ namespace Systems
 {
     public partial struct LevelUpSystem : ISystem
     {
+        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
@@ -21,7 +24,7 @@ namespace Systems
                         bulletNum.ValueRW.num = 2;
                     }
                 }
-                if (score.ValueRO.score == 100)
+                else if (score.ValueRO.score == 75)
                 {
                     foreach (var spawner in SystemAPI.Query<RefRW<EnemySpawnerComponent>>())
                     {
@@ -34,10 +37,12 @@ namespace Systems
                     foreach (var bulletNum in SystemAPI.Query<RefRW<BulletSpawnerComponent>>())
                     {
                        bulletNum.ValueRW.num = 3;
-                        state.Enabled = false;
+                       state.Enabled = false;
                     } 
                 }
             }
+            ecb.Playback(state.EntityManager);
+            ecb.Dispose();
         }
     }
 }
