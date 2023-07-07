@@ -28,12 +28,20 @@ namespace Systems
                 }
                 entityCommandBuffer.DestroyEntity(e);
             }
-            foreach (var (tf, e) in SystemAPI.Query<RefRO<DestroyComponent>>().WithNone<BulletComponent>().WithNone<ControlledMovingComponent>().WithEntityAccess())
+            foreach (var (tf, e) in SystemAPI.Query<RefRO<DestroyComponent>>().WithAll<EnemyComponent>().WithNone<BossTagComponent>().WithEntityAccess())
             {
                 entityCommandBuffer.DestroyEntity(e);
                 foreach (var score in SystemAPI.Query<RefRW<ScoreComponent>>())
                 {
                     score.ValueRW.score ++;
+                }
+            }
+            foreach (var (tf, e) in SystemAPI.Query<RefRO<DestroyComponent>>().WithAll<BossTagComponent>().WithEntityAccess())
+            {
+                entityCommandBuffer.DestroyEntity(e);
+                foreach (var w in SystemAPI.Query<RefRW<WinStatus>>())
+                {
+                    w.ValueRW.isWin = true;
                 }
             }
             entityCommandBuffer.Playback(state.EntityManager);

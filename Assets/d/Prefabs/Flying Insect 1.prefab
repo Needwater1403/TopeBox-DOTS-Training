@@ -268,7 +268,7 @@ GameObject:
   - component: {fileID: 6498675112683465139}
   - component: {fileID: 8371062166273500416}
   - component: {fileID: 1620864696251242281}
-  - component: {fileID: 6028441772795335706}
+  - component: {fileID: 6429674927857880547}
   m_Layer: 0
   m_Name: Flying Insect 1
   m_TagString: Untagged
@@ -477,7 +477,7 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 3.3808424
   m_Center: {x: 0.00000035762787, y: -1.3658175, z: 0}
---- !u!114 &6028441772795335706
+--- !u!114 &6429674927857880547
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -490,9 +490,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Prefab: {fileID: 6381237078863165702, guid: 5bc1d6fa176a3e444a505f20f51160c8, type: 3}
-  SpawnSpeed: 3
-  lastSpawnTime: 0
-  Offset: {x: 0, y: -1, z: 0}
+  SpawnSpeed: 5
+  lastSpawnTime: 1
+  num: 1
+  max: 2
+  offset:
+  - x: 0
+    y: -1
+    z: 0
+  - x: 0
+    y: 0
+    z: 0
 --- !u!1 &4515132498166558212
 GameObject:
   m_ObjectHideFlags: 0

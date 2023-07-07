@@ -7,7 +7,6 @@ using Unity.Mathematics;
 using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
-using static Systems.EnemySpawnerSystem;
 
 public partial struct PlayerSpawnerSystem : ISystem
 {

@@ -31,7 +31,15 @@ namespace Systems
             {
                 spawner.ValueRW.canSpawn = false;
             }
-            foreach(var dt in SystemAPI.Query<RefRW<PlayerDeadStatus>>())
+            foreach (var spawner in SystemAPI.Query<RefRW<EnemySpawnerComponent>>().WithAll<FirstEnemySpawnerComponent>())
+            {
+                spawner.ValueRW.canSpawn = true;
+            }
+            foreach (var spawner in SystemAPI.Query<RefRW<BossSpawnerComponent>>())
+            {
+                spawner.ValueRW.canSpawn = false;
+            }
+            foreach (var dt in SystemAPI.Query<RefRW<PlayerDeadStatus>>())
             {   
                 if(dt.ValueRW.isDead)
                 {
@@ -41,6 +49,10 @@ namespace Systems
                     }
                 }
                 dt.ValueRW.isDead = false;
+            }
+            foreach (var w in SystemAPI.Query<RefRW<WinStatus>>())
+            {
+                w.ValueRW.isWin = false;
             }
             entityCommandBuffer.Playback(state.EntityManager);
             entityCommandBuffer.Dispose();

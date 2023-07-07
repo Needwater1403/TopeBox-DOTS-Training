@@ -13,15 +13,36 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private GameObject txt_score;
     [SerializeField] private GameObject btn_back;
     [SerializeField] private GameObject txt_dead;
+    [SerializeField] private GameObject txt_win;
+    private bool canSpawnBoss;
+    private Entity _scoreBoard;
+    private Entity _winStatus;
     private void Start()
     {
         _entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+        _scoreBoard = _entityManager.CreateEntityQuery(typeof(ScoreComponent)).GetSingletonEntity();
+        _winStatus = _entityManager.CreateEntityQuery(typeof(WinStatus)).GetSingletonEntity();
+        canSpawnBoss = true;
     }
-    public void Update()
+    void Update()
     {
-        if(Input.GetKey(KeyCode.K))
+        var score = _entityManager.GetComponentData<ScoreComponent>(_scoreBoard).score;
+        var status = _entityManager.GetComponentData<WinStatus>(_winStatus).isWin;
+        if (score >= 100 && canSpawnBoss)
         {
-            StartGame();
+            MessageBroadcaster.PrepareMessage().AliveForOneFrame().PostImmediate(_entityManager, new SpawnBossCommand
+            {
+                spawn = true,
+            });
+            canSpawnBoss = false;
+        }
+        if(status)
+        {
+            txt_win.gameObject.SetActive(true);
+        }
+        else
+        {
+            txt_win.gameObject.SetActive(false);
         }
     }
     public void StartGame()
@@ -44,11 +65,12 @@ public class MainMenu : MonoBehaviour
         panel.gameObject.SetActive(true);
         txt_score.gameObject.SetActive(false);
         btn_back.gameObject.SetActive(false);
-        txt_dead.gameObject.SetActive(false);
+
         MessageBroadcaster.PrepareMessage().AliveForOneFrame().PostImmediate(_entityManager, new ResetCommand
         {
             resetGame = true,
         });
         MessageBroadcaster.RemoveAllMessagesWith<StartCommand>(_entityManager);
+        canSpawnBoss = true;
     }
 }
